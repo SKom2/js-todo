@@ -1,0 +1,29 @@
+@import "../../assets/styles/global";
+
+.label{
+  @include displaySettings();
+  gap: 17px;
+  position: relative;
+  @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+  cursor: pointer;
+
+  &__checkbox {
+    appearance: none;
+    margin: 0;
+    -webkit-appearance: none;
+    @include size(20px, 20px);
+    border: 1px solid $globalBlue;
+    border-radius: 50%;
+    cursor: pointer;
+
+    &.checked{
+      background-color: $globalBlue;
+    }
+  }
+
+  &.checked{
+    color: $borderGrey;
+    text-decoration: line-through;
+  }
+}
+

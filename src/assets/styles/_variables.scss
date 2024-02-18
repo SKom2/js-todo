@@ -1,0 +1,49 @@
+/**
+ ------- Colors ---------
+ */
+
+$globalWhite: #FFF;
+$globalBlack: #000;
+$globalBlue: #5A7FFF;
+$globalGrey: #FCFCFC;
+$globalRed: #FF5A5A;
+
+$borderGrey: #BEB5B5;
+
+
+/*-----------Fonts------------*/
+
+$mainTextFont: 'Roboto', sans-serif;
+
+/*-----------End of Fonts------------*/
+
+
+/*-----------Font Weights------------*/
+
+$fw-Bold: 700;
+$fw-Medium: 500;
+$fw-Regular: 400;
+
+/*-----------End of Font Weights------------*/
+
+
+/*-----------Font Sizes------------*/
+
+$fs-40: 40px;
+$fs-32: 32px;
+$fs-26: 26px;
+$fs-20: 20px;
+$fs-18: 18px;
+$fs-16: 16px;
+$fs-14: 14px;
+$fs-12: 12px;
+
+/*-----------End of Font Sizes------------*/
+
+/*-----------Window Breakpoints------------*/
+
+// Main Breakpoints
+
+$Laptop: 1920px;
+$Mobile: 1280px;
+$Mobile: 500px;

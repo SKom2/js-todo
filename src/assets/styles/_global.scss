@@ -1,0 +1,20 @@
+@import "variables";
+@import "mixins";
+@import "fonts";
+
+body {
+  max-width: $Laptop;
+  min-width: 320px;
+  height: 100%;
+  margin: 0 auto;
+  @include fontSet();
+  @include theme();
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

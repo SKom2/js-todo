@@ -1,0 +1,8 @@
+@import "../../assets/styles/global";
+
+.checkLists{
+
+  @include displaySettings();
+  flex-direction: column;
+  gap: 30px;
+}

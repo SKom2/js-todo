@@ -1,0 +1,35 @@
+@import "../../assets/styles/global";
+
+.checkList{
+  padding: 20px;
+  width: 100%;
+  background-color: $globalGrey;
+  margin: 0;
+  border-radius: 20px;
+  box-shadow: 0 0 1px 1px #d7c8c8;
+  box-sizing: border-box;
+
+  &__form{
+    @include displaySettings($display: inline-block);
+    height: 45px;
+  }
+
+  &__header{
+    @include displaySettings($justify: space-between);
+    margin-bottom: 40px;
+  }
+
+  &__removeBtn{
+    background-color: transparent;
+    border: none;
+    color: $globalRed;
+    @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+    cursor: pointer;
+  }
+
+  &__name{
+    margin: 0;
+    @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+  }
+}
+

@@ -1,0 +1,49 @@
+@import "../../assets/styles/global";
+
+.addTaskLabel{
+  outline: none;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  color: $globalBlue;
+  @include displaySettings($display: inline-block);
+
+  &__input{
+    outline: none;
+    border: none;
+    @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+    @include transitionSetting();
+    border-radius: 10px;
+    box-shadow: 0 0 3px 0 #998c8c;
+    padding: 8px;
+    margin-right: 10px;
+    width: 300px;
+
+    &.valid{
+      outline: 1px solid $globalBlue;
+      @include transitionSetting();
+      color: $globalBlue;
+    }
+
+    &:hover{
+      width: 300px;
+      @include transitionSetting();
+    }
+
+  }
+
+  &__text{
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    color:  #998c8c;
+    @include fontSet($fs: $fs-18, $fw: $fw-Regular);
+    height: 100%;
+    padding: 0;
+
+    &.valid{
+      color: $globalBlue;
+    }
+  }
+}

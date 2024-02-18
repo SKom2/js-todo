@@ -1,0 +1,10 @@
+@import "../../assets/styles/global";
+
+.tasks{
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 20px;
+  @include displaySettings($align: flex-start);
+  flex-direction: column;
+  gap: 20px;
+}

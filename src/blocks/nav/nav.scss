@@ -1,0 +1,27 @@
+@import "../../assets/styles/global";
+
+.nav {
+  @include displaySettings($justify: space-between);
+  &__states{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    @include displaySettings($justify: flex-start);
+    gap: 40px;
+  }
+
+  &__state{
+    cursor: pointer;
+    @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+    padding-bottom: 3px;
+  }
+
+  .active{
+    @include fontSet($fs: $fs-20, $fw: $fw-Medium);
+    border-bottom: 3px solid $globalBlack;
+  }
+
+  &__addCheckList{
+    color: $globalBlue !important;
+  }
+}
