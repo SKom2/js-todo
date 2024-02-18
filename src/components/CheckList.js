@@ -4,7 +4,6 @@ export class CheckList {
     constructor(checklistData) {
         this.id = checklistData.id;
         this.name = checklistData.name;
-        this.valid = checklistData.valid;
         if (checklistData.tasks) {
             this.tasks = checklistData.tasks.map((task) => {
                 return new Task(task);

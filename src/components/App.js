@@ -1,53 +1,72 @@
 import {Todo} from "./Todo";
-import {CheckList} from "./CheckList";
-import {checkListClassNames, taskClassNames} from "../utils/classNames";
+import {checkListClassNames, commonClassNames, taskClassNames} from "../utils/classNames";
 import {CheckListUI, TaskUI} from "./UI";
 
 export class App {
-    constructor(todoElement, addCheckListBtn) {
-        this._todoElement = todoElement;
+    constructor(checkListContainerElement, addCheckListBtn) {
+        this._checkListContainerElement = checkListContainerElement;
         this._addCheckListBtn = addCheckListBtn;
     }
 
     init(){
-        this.todo = new Todo();
-        this._addCheckListBtn.addEventListener('click', this.handleAddCheckListBtnClick.bind(this))
-        this._todoElement.addEventListener('click', this.handleRemoveCheckListBtnClick.bind(this))
+        this._todo = new Todo();
 
-        this._todoElement.addEventListener('click', event => {
-            const target = event.target;
-            const checkListElement = target.closest('.checkList');
-            const checkListId = checkListElement ?  Number(checkListElement.dataset.id) : null;
-            const taskElement = target.closest('.task');
-            const taskId = taskElement ?  Number(taskElement.dataset.id) : null;
-            if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)){
-                this.todo.handleRemoveTask(taskId, checkListId);
-                this.render();
-            }
-            if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK__LABEL)){
-                this.todo.handleToggleTask(taskId, checkListId);
-                this.render();
-            }
-        });
-
-        this._todoElement.addEventListener('click', this.handleSubmit.bind(this))
-
-        this.render()
+        this._addCheckListBtn.addEventListener('click', this._handleAddCheckListBtnClick.bind(this))
+        this._checkListContainerElement.addEventListener('click', this._handleCheckListEventListeners.bind(this))
+        this._render()
     }
 
-    handleSubmit(event) {
+    _handleCheckListEventListeners(event){
+        this._handleSubmitAddTaskForm(event)
+        this._handleRemoveCheckList(event)
+        this._handleRemoveTask(event)
+        this._handleToggleTask(event)
+    }
+
+    _getChecklistAndTaskIds(target) {
+        const checkListElement = target.closest(`.${checkListClassNames.CHECKLIST}`);
+        const taskElement = target.closest(`.${taskClassNames.TASK}`);
+        return {
+            checkListId: checkListElement ? Number(checkListElement.dataset.id) : null,
+            taskId: taskElement ? Number(taskElement.dataset.id) : null,
+        };
+    }
+
+    _handleRemoveTask(event){
+        const target = event.target;
+        const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
+
+        if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)){
+            this._todo.handleRemoveTask(taskId, checkListId);
+            this._render();
+        }
+    }
+
+    _handleToggleTask(event){
+        const target = event.target;
+        const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
+
+        if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK__LABEL)){
+            this._todo.handleToggleTask(taskId, checkListId);
+            this._render();
+        }
+    }
+
+    _handleSubmitAddTaskForm(event) {
         event.preventDefault();
         const target = event.target;
+        const { checkListId } = this._getChecklistAndTaskIds(target);
 
-        const form = event.target.closest('.form');
+        const form = event.target.closest(`.${commonClassNames.FORM}`);
         if (!form) {
             return;
         }
 
-        const inputElement = form.querySelector('.addTaskLabel__input');
+        const inputElement = form.querySelector(`.${commonClassNames.ADD_TASK_FORM_INPUT}`);
         if (!inputElement) {
             return;
         }
+
         inputElement.addEventListener('input', (event) => {
             const buttonElement = inputElement.nextElementSibling;
             const value = event.target.value;
@@ -64,43 +83,41 @@ export class App {
         if (taskContent.length < 5) {
             return;
         }
-        const checkListElement = form.closest('.checkList');
-        const checkListId = checkListElement ? Number(checkListElement.dataset.id) : null;
-        if (target.classList.contains(taskClassNames.ADD_TASK_BTN)) {
-            this.todo.handleAddTask(taskContent, checkListId);
+
+        if (target.classList.contains(commonClassNames.ADD_BTN)) {
+            this._todo.handleAddTask(taskContent, checkListId);
             inputElement.value = '';
-            this.render();
+            this._render();
         }
     }
 
-    handleRemoveCheckListBtnClick(event){
+    _handleRemoveCheckList(event){
         event.preventDefault();
         const target = event.target;
-        const checkListElement = target.closest('.checkList');
-        const checkListId = checkListElement ? Number(checkListElement.dataset.id) : null;
+        const { checkListId } = this._getChecklistAndTaskIds(target);
+
         if (target.classList.contains(checkListClassNames.REMOVE_BTN)){
-            this.todo.removeCheckList(checkListId);
-            this.render();
+            this._todo.removeCheckList(checkListId);
+            this._render();
         }
     }
 
-    handleAddCheckListBtnClick(event){
+    _handleAddCheckListBtnClick(event){
         event.preventDefault();
         const target = event.target;
-        if (target.classList.contains(checkListClassNames.ADD_CHECKLIST_BTN)){
-            this.todo.addCheckList({
+        if (target.classList.contains(commonClassNames.ADD_BTN)){
+            this._todo.addCheckList({
                 id: Math.random(),
                 name: 'Check List 1',
                 tasks: [],
-                valid: false,
             })
-            this.render();
+            this._render();
         }
     }
 
-    render(){
-        this._todoElement.innerHTML = '';
-        const checkListsArr = this.todo.getCheckLists();
-        CheckListUI.fillTodo(this._todoElement, checkListsArr);
+    _render(){
+        this._checkListContainerElement.innerHTML = '';
+        const checkListsArr = this._todo.getCheckLists();
+        CheckListUI.fillTodo(this._checkListContainerElement, checkListsArr);
     }
 }

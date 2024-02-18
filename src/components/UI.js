@@ -1,7 +1,6 @@
-import {checkListClassNames, taskClassNames} from "../utils/classNames";
+import {checkListClassNames, commonClassNames, taskClassNames} from "../utils/classNames";
 import {createElement} from "../utils/utils";
 import RemoveBin from '../assets/img/Bin.svg'
-import {Task} from "./Task";
 
 export class TaskUI {
     static getCheckboxInput(completed){
@@ -10,7 +9,7 @@ export class TaskUI {
         ]
 
         if (completed) {
-            inputClasses.push(taskClassNames.CHECKED);
+            inputClasses.push(commonClassNames.CHECKED);
         }
 
         return createElement(
@@ -29,7 +28,7 @@ export class TaskUI {
         ]
 
         if (completed){
-            taskLabelClasses.push(taskClassNames.CHECKED);
+            taskLabelClasses.push(commonClassNames.CHECKED);
         }
 
         const taskLabel = createElement(
@@ -83,7 +82,8 @@ export class TaskUI {
         const taskLabel = this.getTaskLabel(task.completed, task.text);
         const removeBinBtn = this.getRemoveBinBtn();
         const taskClasses = [
-            taskClassNames.TASK
+            taskClassNames.TASK,
+            commonClassNames.TASK
         ]
 
        const taskElement = createElement(
@@ -168,11 +168,11 @@ export class CheckListUI {
 
     static getAddTaskInput(valid){
         const addTaskInputClassNames = [
-            checkListClassNames.ADD_TASK_INPUT
+            commonClassNames.ADD_TASK_FORM_INPUT
         ]
 
     if (valid) {
-            addTaskInputClassNames.push(checkListClassNames.VALID_INPUT)
+            addTaskInputClassNames.push(commonClassNames.VALID_INPUT)
         }
 
         return createElement(
@@ -188,7 +188,8 @@ export class CheckListUI {
 
     static getAddTaskText(){
         const addTaskTextClassNames = [
-            checkListClassNames.ADD_TASK_TEXT
+            checkListClassNames.ADD_TASK_TEXT,
+            commonClassNames.ADD_BTN
         ]
 
         return createElement(
@@ -201,28 +202,13 @@ export class CheckListUI {
         )
     }
 
-    // static getAddTaskLabel(valid){
-    //     const addTaskInput = this.getAddTaskInput(valid);
-    //     const addTaskText = this.getAddTaskText();
-    //     const addTaskBtnClassNames = [
-    //         checkListClassNames.ADD_TASK_BTN,
-    //     ]
-    //
-    //     const addTaskLabel = createElement(
-    //         'label',
-    //         addTaskBtnClassNames.join(' ')
-    //     )
-    //     addTaskLabel.append(addTaskInput, addTaskText)
-    //
-    //     return addTaskLabel;
-    // }
-
     static getAddTaskForm(valid) {
         const addTaskInput = this.getAddTaskInput(valid);
         const addTaskText = this.getAddTaskText();
 
         const addTaskFormClassNames = [
-            checkListClassNames.ADD_TASK_FORM
+            checkListClassNames.ADD_TASK_FORM,
+            commonClassNames.FORM
         ]
 
         const addTaskForm = createElement(
@@ -241,7 +227,8 @@ export class CheckListUI {
         const addTaskForm = this.getAddTaskForm(checkList.valid);
 
         const checkListClasses = [
-            checkListClassNames.CHECKLIST
+            checkListClassNames.CHECKLIST,
+            commonClassNames.CHECKLIST
         ]
 
         const checkListElement = createElement(

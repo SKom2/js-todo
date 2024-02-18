@@ -23,5 +23,11 @@
 
   &__addCheckList{
     color: $globalBlue !important;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    @include fontSet($fs: $fs-18, $fw: $fw-Regular);
+    padding: 0;
   }
 }

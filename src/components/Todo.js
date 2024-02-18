@@ -25,7 +25,6 @@ export class Todo {
         return this._checkLists;
     }
 
-
     handleAddTask(text, checkListId) {
         this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);
         this.checkList.addTask({
