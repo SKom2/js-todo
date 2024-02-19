@@ -253,15 +253,6 @@ export class CheckListUI {
         tasks.filter(taskElement => isCompletedPage ? taskElement.completed : true)
             .forEach(taskElement => {
                 const taskUI = TaskUI.getTask(taskElement);
-
-                // Если страница отображает выполненные задачи, добавить атрибут disabled
-                if (isCompletedPage) {
-                    // Предполагается, что taskUI является DOM элементом
-                    taskUI.setAttribute('disabled', 'true');
-                    // Возможно, потребуется добавить класс или изменить стиль для визуального отображения disabled состояния
-                    taskUI.classList.add('disabled'); // Пример добавления класса
-                }
-
                 tasksList.appendChild(taskUI);
             });
 
