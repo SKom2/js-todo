@@ -10,49 +10,183 @@ export class App {
         this._todo = new Todo();
     }
 
-    init(){
+    init() {
+        this._setupEventListeners();
+        this._restoreActiveTab();
+    }
 
-        this._addCheckListBtn.addEventListener('click', this._handleAddCheckListBtnClick.bind(this))
-        this._checkListContainerElement.addEventListener('click', this._handleCheckListEventListeners.bind(this))
+    _setupEventListeners() {
+        this._setupTabListeners();
+        this._addCheckListBtn.addEventListener('click', () => this._handleAddCheckList());
+        this._checkListContainerElement.addEventListener('click', (event) => this._handleCheckListContainerClick(event));
+    }
 
-        const allTasksTab = document.querySelector('#allTasks');
-        const completedTasksTab = document.querySelector('#completedTasks');
-
-        allTasksTab.addEventListener('click', () => {
-            this._filterTasks('all')
-            this._setActiveTab(allTasksTab);
+    _setupTabListeners() {
+        const tabs = ['allTasks', 'completedTasks'];
+        tabs.forEach(tabId => {
+            document.getElementById(tabId).addEventListener('click', () => this._handleTabClick(tabId));
         });
-        completedTasksTab.addEventListener('click', () => {
-            this._filterTasks('completed')
-            this._setActiveTab(completedTasksTab);
-        });
+    }
 
-        const savedTab = localStorage.getItem('activeTab');
-        if (savedTab) {
-            const tabElement = document.querySelector(`#${savedTab}`);
-            if (tabElement) {
-                this._filterTasks(savedTab === 'allTasks' ? 'all' : 'completed');
-                this._setActiveTab(tabElement);
-            }
+    _handleTabClick(tab) {
+        const filterType = tab === 'allTasks' ? 'all' : 'completed';
+        this._filterTasks(filterType);
+        this._setActiveTab(document.getElementById(tab));
+    }
+
+    _handleCheckListContainerClick(event) {
+        event.preventDefault();
+        const { checkListId, taskId } = this._extractIds(event.target);
+        this._handleSubmitTask(event.target, checkListId);
+        this._handleSubmitName(event.target, checkListId);
+        if (this._isRemoveCheckListButton(event.target)) {
+            this._handleRemoveCheckList(checkListId);
+        } else if (this._isRemoveTaskButton(event.target)) {
+            this._handleRemoveTask(taskId, checkListId);
+        } else if (this._isToggleTaskButton(event.target)) {
+            this._handleToggleTask(taskId, checkListId);
         }
     }
 
-    _handleCheckListEventListeners(event){
-        event.preventDefault();
-        this._handleSubmit(event)
-        this._handleRemoveCheckList(event)
-        this._handleRemoveTask(event)
-        this._handleToggleTask(event)
+    _isAddTaskButton(target) {
+        return target.classList.contains(checkListClassNames.CHECKLIST_ADD_TASK_BTN);
+    }
+
+    _isSetNameButton(target) {
+        return target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN);
+    }
+
+    _isEditNameButton(target){
+        return target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN) || target.classList.contains(checkListClassNames.CHECKLIST_ADD_BTN_ICON)
+    }
+
+    _isRemoveCheckListButton(target) {
+        return target.classList.contains(checkListClassNames.REMOVE_BTN);
+    }
+
+    _isRemoveTaskButton(target) {
+        return target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON);
+    }
+
+    _isToggleTaskButton(target) {
+        return target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK_LABEL);
+    }
+
+    _handleSubmitTask(target, checkListId) {
+        this._validateInputImmediately(target);
+        const inputContent = this._getInputContent(target);
+        const checkListName = this._todo.getCheckListById(checkListId).name;
+        if (!inputContent || inputContent.length < 5 || checkListName === '') return;
+        if (this._isAddTaskButton(target)){
+            this._todo.handleAddTask(inputContent, checkListId);
+            this._clearInput(target);
+            this._render(checkListId);
+        }
+    }
+
+    _handleSubmitName(target, checkListId) {
+        this._validateInputImmediately(target);
+        const inputContent = this._getInputContent(target);
+        if (!inputContent || inputContent.length < 5) return;
+        if (this._isSetNameButton(target)){
+            this._todo.setCheckListName(inputContent, checkListId);
+            this._clearInput(target);
+            this._render(checkListId);
+        }
+    }
+
+    _validateInput(inputElement) {
+        const buttonElement = inputElement.nextElementSibling;
+        const isValid = inputElement.value.trim().length >= 5;
+        buttonElement.disabled = !isValid;
+        inputElement.classList.toggle('valid', isValid);
+        buttonElement.classList.toggle('valid', isValid);
+    }
+
+    _setupInputValidationListener(inputElement) {
+        inputElement.addEventListener('input', (event) => this._validateInput(event.target));
+    }
+
+    _handleEditButton(spanElement, target){
+        if (this._isEditNameButton(target)){
+            const { checkListId } = this._extractIds(target);
+
+            this._todo.editCheckListName(spanElement.textContent, checkListId);
+            this._render(checkListId);
+        }
+    }
+
+    _validateInputImmediately(target) {
+        const form = target.closest(`.${commonClassNames.FORM}`);
+        if (!form) return;
+        const inputElement = form.querySelector(`.${commonClassNames.FORM_INPUT}`);
+        if (inputElement) this._setupInputValidationListener(inputElement);
+        const spanElement = form.querySelector(`.${commonClassNames.SET_NAME}`);
+        if (spanElement) this._handleEditButton(spanElement, target)
+    }
+
+    _handleRemoveCheckList(checkListId) {
+        this._todo.removeCheckList(checkListId);
+        this._render();
+    }
+
+    _handleRemoveTask(taskId, checkListId) {
+        this._todo.handleRemoveTask(taskId, checkListId);
+        this._filterTasks(this._page);
+    }
+
+    _handleAddCheckList() {
+        this._todo.addCheckList({
+            id: Date.now(),
+            name: '',
+            tasks: [],
+            isSetName: false,
+        });
+        this._render();
+    }
+
+    _handleToggleTask(taskId, checkListId) {
+        this._todo.handleToggleTask(taskId, checkListId);
+        this._render(checkListId, taskId);
+    }
+
+    _getInputContent(target) {
+        const form = target.closest(`.${commonClassNames.FORM}`);
+        const inputElement = form?.querySelector(`.${commonClassNames.FORM_INPUT}`);
+        return inputElement?.value.trim();
+    }
+
+    _clearInput(target) {
+        const form = target.closest(`.${commonClassNames.FORM}`);
+        const inputElement = form?.querySelector(`.${commonClassNames.FORM_INPUT}`);
+        if (inputElement) inputElement.value = '';
+    }
+
+    _extractIds(target) {
+        const checkListElement = target.closest(`.${checkListClassNames.CHECKLIST}`);
+        const taskElement = target.closest(`.${taskClassNames.TASK}`);
+        return {
+            checkListId: checkListElement ? parseInt(checkListElement.dataset.checklistId, 10) : null,
+            taskId: taskElement ? parseInt(taskElement.dataset.taskId, 10) : null,
+        };
+    }
+
+    _toggleAddCheckListButton(activeTabId) {
+        if (activeTabId === 'completedTasks') {
+            this._addCheckListBtn.style.display = 'none';
+        } else {
+            this._addCheckListBtn.style.display = 'block';
+        }
     }
 
     _setActiveTab(activeTabElement) {
-        const tabs = document.querySelectorAll(`.${tabClasses.NAV_TAB}`);
-        tabs.forEach(tab => {
-            tab.classList.remove(tabClasses.ACTIVE_TAB)
+        document.querySelectorAll(`.${tabClasses.NAV_TAB}`).forEach(tab => {
+            tab.classList.remove(tabClasses.ACTIVE_TAB);
         });
         activeTabElement.classList.add(tabClasses.ACTIVE_TAB);
-
         localStorage.setItem('activeTab', activeTabElement.id);
+
+        this._toggleAddCheckListButton(activeTabElement.id);
     }
 
     _filterTasks(filterType) {
@@ -60,146 +194,41 @@ export class App {
         const filteredCheckLists = this._todo.getCheckLists().map(checkList => {
             if (filterType === 'completed') {
                 const completedTasks = checkList.tasks.filter(task => task.completed);
+                console.log({...checkList, tasks: completedTasks})
                 return { ...checkList, tasks: completedTasks };
-                } else {
-                    return checkList;
-                }
+            } else {
+                return checkList;
+            }
         });
         this._renderFilteredCheckLists(filteredCheckLists);
     }
 
-
-    _getChecklistAndTaskIds(target) {
-        const checkListElement = target.closest(`.${checkListClassNames.CHECKLIST}`);
-        const taskElement = target.closest(`.${taskClassNames.TASK}`);
-        return {
-            checkListId: checkListElement ? Number(checkListElement.dataset.checklistId) : null,
-            taskId: taskElement ? Number(taskElement.dataset.taskId) : null,
-        };
-    }
-
-    _handleRemoveTask(event){
-        const target = event.target;
-        if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)) {
-            const {taskId, checkListId} = this._getChecklistAndTaskIds(target);
-            this._todo.handleRemoveTask(taskId, checkListId);
-
-            if (this._page === 'completed') {
-                this._filterTasks('completed');
-            } else {
-                this._render(checkListId);
-            }
-        }
-    }
-
-    _handleToggleTask(event){
-        const target = event.target;
-        if (this._page === 'all'){
-            if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK_LABEL)){
-                const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
-                this._todo.handleToggleTask(taskId, checkListId);
-                this._render(checkListId, taskId);
-            }
-        }
-    }
-
-    _handleSubmit(event) {
-        const target = event.target;
-
-        const form = event.target.closest(`.${commonClassNames.FORM}`);
-        if (!form) {
-            return;
-        }
-
-        const inputElement = form.querySelector(`.${commonClassNames.FORM_INPUT}`);
-        const spanElement = form.querySelector(`.${commonClassNames.SET_NAME}`);
-
-        if (inputElement) {
-            inputElement.addEventListener('input', (event) => {
-                const buttonElement = inputElement.nextElementSibling;
-                const value = event.target.value;
-                if (value.length >= 5) {
-                    buttonElement.removeAttribute('disabled')
-                    event.target.classList.add('valid')
-                    buttonElement.classList.add('valid')
-                } else {
-                    buttonElement.setAttribute('disabled', 'true')
-                    event.target.classList.remove('valid')
-                    buttonElement.classList.remove('valid')
-                }
-            })
-
-            const inputContent = inputElement.value.trim();
-            if (inputContent.length < 5) {
-                return;
-            }
-
-            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_TASK_BTN)) {
-                const { checkListId } = this._getChecklistAndTaskIds(target);
-                this._todo.handleAddTask(inputContent, checkListId);
-                inputElement.value = '';
-                this._render(checkListId);
-            }
-            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN)) {
-                const { checkListId } = this._getChecklistAndTaskIds(target);
-                this._todo.setCheckListName(inputContent, checkListId);
-                inputElement.value = '';
-                this._render(checkListId);
-            }
-        }
-
-        if (spanElement){
-            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN) || target.classList.contains(checkListClassNames.CHECKLIST_ADD_BTN_ICON) ) {
-                const { checkListId } = this._getChecklistAndTaskIds(target);
-
-                this._todo.editCheckListName(spanElement.textContent, checkListId);
-                this._render(checkListId);
-            }
-        }
-    }
-
-    _handleRemoveCheckList(event){
-        const target = event.target;
-
-        if (target.classList.contains(checkListClassNames.REMOVE_BTN)){
-            const { checkListId } = this._getChecklistAndTaskIds(target);
-            this._todo.removeCheckList(checkListId);
-            this._render();
-        }
-    }
-
-    _handleAddCheckListBtnClick(event){
-        const target = event.target;
-        if (target.classList.contains(checkListClassNames.ADD_CHECKLIST_BTN)){
-            this._todo.addCheckList({
-                id: Date.now(),
-                name: '',
-                tasks: [],
-                isSetName: false,
-            })
-            this._render();
-        }
+    _restoreActiveTab() {
+        const savedTab = localStorage.getItem('activeTab');
+        if (!savedTab) return;
+        const tabElement = document.getElementById(savedTab);
+        if (!tabElement) return;
+        this._handleTabClick(savedTab);
     }
 
     _render(updatedCheckListId = null, updatedTaskId = null) {
         if (updatedCheckListId && updatedTaskId) {
+            console.log('tuut')
             const checkList = this._todo.getCheckListById(updatedCheckListId);
             const task = checkList ? checkList.getTaskById(updatedTaskId) : null;
-            if (task) {
-                const taskElement = this._checkListContainerElement.querySelector(`[data-task-id="${updatedTaskId}"]`);
-                if (taskElement) {
-                    const updatedTaskElement = TaskUI.getTask(task);
-                    taskElement.parentNode.replaceChild(updatedTaskElement, taskElement);
-                }
-            }
+            console.log(checkList)
+            if (!task) return;
+            const taskElement = this._checkListContainerElement.querySelector(`[data-task-id="${updatedTaskId}"]`);
+            if (!taskElement) return;
+            const updatedTaskElement = TaskUI.getTask(task);
+            taskElement.parentNode.replaceChild(updatedTaskElement, taskElement);
         } else if (updatedCheckListId) {
             const updatedCheckListElement = this._checkListContainerElement.querySelector(`[data-checklist-id="${updatedCheckListId}"]`);
-            if (updatedCheckListElement) {
-                const isCompletedPage = this._page === 'completed';
-                const checkListData = this._todo.getCheckListById(updatedCheckListId);
-                const updatedCheckList = CheckListUI.getCheckList(checkListData, isCompletedPage);
-                this._checkListContainerElement.replaceChild(updatedCheckList, updatedCheckListElement);
-            }
+            if (!updatedCheckListElement) return;
+            const isCompletedPage = this._page === 'completed';
+            const checkListData = this._todo.getCheckListById(updatedCheckListId);
+            const updatedCheckList = CheckListUI.getCheckList(checkListData, isCompletedPage);
+            this._checkListContainerElement.replaceChild(updatedCheckList, updatedCheckListElement);
         } else {
             this._checkListContainerElement.innerHTML = '';
             const checkListsArr = this._todo.getCheckLists();
@@ -213,6 +242,7 @@ export class App {
         if (isCompletedPage){
             filteredCheckLists = filteredCheckLists.filter(checkList => checkList.tasks.length !== 0)
         }
+        console.log(filteredCheckLists)
         CheckListUI.fillTodo(this._checkListContainerElement, filteredCheckLists, isCompletedPage);
 
     }

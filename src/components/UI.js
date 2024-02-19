@@ -38,6 +38,7 @@ export class TaskUI {
         )
 
         taskLabel.appendChild(checkBoxInput);
+        console.log(text)
 
         const textNode = document.createTextNode(text);
         taskLabel.appendChild(textNode);
@@ -80,6 +81,7 @@ export class TaskUI {
     }
 
    static getTask(task) {
+       console.log(task)
         const taskLabel = this.getTaskLabel(task.completed, task.text);
         const removeBinBtn = this.getRemoveBinBtn();
         const taskClasses = [
@@ -246,18 +248,10 @@ export class CheckListUI {
         )
 
         if (tasks) {
-            if (!isCompletedPage) {
-                tasks.forEach(task => {
-                    const taskUI = TaskUI.getTask(task)
-                    tasksList.appendChild(taskUI);
-                })
-            } else {
-                tasks.forEach(task => {
-                    const completedTask = tasks.find(task => task.completed);
-                    const taskUI = TaskUI.getTask(completedTask)
-                    tasksList.appendChild(taskUI);
-                })
-            }
+            tasks.forEach(taskElement => {
+                const taskUI = TaskUI.getTask(taskElement)
+                tasksList.appendChild(taskUI);
+            })
         }
 
 
