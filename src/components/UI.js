@@ -91,7 +91,7 @@ export class TaskUI {
            taskClasses.join(' '),
            '',
            {
-               "data-id": task.id
+               "data-task-id": task.id
            }
        )
        taskElement.append(taskLabel, removeBinBtn);
@@ -166,14 +166,10 @@ export class CheckListUI {
         return tasksList;
     }
 
-    static getAddTaskInput(valid){
+    static getAddTaskInput(){
         const addTaskInputClassNames = [
             commonClassNames.ADD_TASK_FORM_INPUT
         ]
-
-    if (valid) {
-            addTaskInputClassNames.push(commonClassNames.VALID_INPUT)
-        }
 
         return createElement(
             'input',
@@ -202,8 +198,8 @@ export class CheckListUI {
         )
     }
 
-    static getAddTaskForm(valid) {
-        const addTaskInput = this.getAddTaskInput(valid);
+    static getAddTaskForm() {
+        const addTaskInput = this.getAddTaskInput();
         const addTaskText = this.getAddTaskText();
 
         const addTaskFormClassNames = [
@@ -224,7 +220,7 @@ export class CheckListUI {
     static getCheckList(checkList){
         const checkListHeader = this.getCheckListHeader(checkList.name);
         const checkListTasks = this.getTasksList(checkList.tasks);
-        const addTaskForm = this.getAddTaskForm(checkList.valid);
+        const addTaskForm = this.getAddTaskForm();
 
         const checkListClasses = [
             checkListClassNames.CHECKLIST,
@@ -236,7 +232,7 @@ export class CheckListUI {
             checkListClasses.join(' '),
             '',
             {
-                'data-id': checkList.id
+                'data-checklist-id': checkList.id
             }
         )
 
@@ -245,9 +241,9 @@ export class CheckListUI {
         return checkListElement;
     }
 
-    static fillTodo(todoElement, checkListsArr){
+    static fillTodo(checkListContainerElement, checkListsArr){
         checkListsArr.forEach((checkList) => {
-            todoElement.appendChild(this.getCheckList(checkList));
+            checkListContainerElement.appendChild(this.getCheckList(checkList));
         })
     }
 }

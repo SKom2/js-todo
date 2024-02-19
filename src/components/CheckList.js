@@ -17,6 +17,11 @@ export class CheckList {
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
 
+    getTaskById(taskId){
+        this.task = this.tasks.find(task => task.id === taskId)
+        return this.task;
+    }
+
     addTask(taskData){
         this.tasks.push(new Task(taskData));
         this._saveTasks();

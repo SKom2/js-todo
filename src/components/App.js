@@ -27,35 +27,33 @@ export class App {
         const checkListElement = target.closest(`.${checkListClassNames.CHECKLIST}`);
         const taskElement = target.closest(`.${taskClassNames.TASK}`);
         return {
-            checkListId: checkListElement ? Number(checkListElement.dataset.id) : null,
-            taskId: taskElement ? Number(taskElement.dataset.id) : null,
+            checkListId: checkListElement ? Number(checkListElement.dataset.checklistId) : null,
+            taskId: taskElement ? Number(taskElement.dataset.taskId) : null,
         };
     }
 
     _handleRemoveTask(event){
         const target = event.target;
-        const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
 
         if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)){
+            const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
             this._todo.handleRemoveTask(taskId, checkListId);
-            this._render();
+            this._render(checkListId);
         }
     }
 
     _handleToggleTask(event){
         const target = event.target;
-        const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
-
         if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK__LABEL)){
+            const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
             this._todo.handleToggleTask(taskId, checkListId);
-            this._render();
+            this._render(checkListId, taskId);
         }
     }
 
     _handleSubmitAddTaskForm(event) {
         event.preventDefault();
         const target = event.target;
-        const { checkListId } = this._getChecklistAndTaskIds(target);
 
         const form = event.target.closest(`.${commonClassNames.FORM}`);
         if (!form) {
@@ -85,18 +83,19 @@ export class App {
         }
 
         if (target.classList.contains(commonClassNames.ADD_BTN)) {
+            const { checkListId } = this._getChecklistAndTaskIds(target);
             this._todo.handleAddTask(taskContent, checkListId);
             inputElement.value = '';
-            this._render();
+            this._render(checkListId);
         }
     }
 
     _handleRemoveCheckList(event){
         event.preventDefault();
         const target = event.target;
-        const { checkListId } = this._getChecklistAndTaskIds(target);
 
         if (target.classList.contains(checkListClassNames.REMOVE_BTN)){
+            const { checkListId } = this._getChecklistAndTaskIds(target);
             this._todo.removeCheckList(checkListId);
             this._render();
         }
@@ -107,7 +106,7 @@ export class App {
         const target = event.target;
         if (target.classList.contains(commonClassNames.ADD_BTN)){
             this._todo.addCheckList({
-                id: Math.random(),
+                id: Date.now(),
                 name: 'Check List 1',
                 tasks: [],
             })
@@ -115,9 +114,29 @@ export class App {
         }
     }
 
-    _render(){
-        this._checkListContainerElement.innerHTML = '';
-        const checkListsArr = this._todo.getCheckLists();
-        CheckListUI.fillTodo(this._checkListContainerElement, checkListsArr);
+    _render(updatedCheckListId = null, updatedTaskId = null) {
+        if (updatedCheckListId && updatedTaskId) {
+            const checkList = this._todo.getCheckListById(updatedCheckListId);
+            const task = checkList ? checkList.getTaskById(updatedTaskId) : null;
+
+            if (task) {
+                const taskElement = this._checkListContainerElement.querySelector(`[data-task-id="${updatedTaskId}"]`);
+                if (taskElement) {
+                    const updatedTaskElement = TaskUI.getTask(task);
+                    taskElement.parentNode.replaceChild(updatedTaskElement, taskElement);
+                }
+            }
+        } else if (updatedCheckListId) {
+            const updatedCheckListElement = this._checkListContainerElement.querySelector(`[data-checklist-id="${updatedCheckListId}"]`);
+            if (updatedCheckListElement) {
+                const checkListData = this._todo.getCheckListById(updatedCheckListId);
+                const updatedCheckList = CheckListUI.getCheckList(checkListData);
+                this._checkListContainerElement.replaceChild(updatedCheckList, updatedCheckListElement);
+            }
+        } else {
+            this._checkListContainerElement.innerHTML = '';
+            const checkListsArr = this._todo.getCheckLists();
+            CheckListUI.fillTodo(this._checkListContainerElement, checkListsArr);
+        }
     }
 }

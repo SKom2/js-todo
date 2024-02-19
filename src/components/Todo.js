@@ -1,14 +1,14 @@
 import {CheckList} from "./CheckList"
 export class Todo {
     constructor() {
-        const storedCheckLists = JSON.parse(localStorage.getItem('checkLists')) || [];
+        const storedCheckLists = JSON.parse(localStorage.getItem('CheckLists')) || [];
         this._checkLists = storedCheckLists.map((checkList) => {
             return new CheckList(checkList)
         })
     }
 
     _saveCheckLists(){
-        localStorage.setItem('checkLists', JSON.stringify(this._checkLists));
+        localStorage.setItem('CheckLists', JSON.stringify(this._checkLists));
     }
 
     addCheckList(checkListData) {
@@ -19,6 +19,11 @@ export class Todo {
     removeCheckList(checkListId){
         this._checkLists = this._checkLists.filter(checkList => checkList.id !== checkListId);
         this._saveCheckLists();
+    }
+
+    getCheckListById(checkListId){
+        this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);
+        return this.checkList;
     }
 
     getCheckLists(){
