@@ -1,6 +1,7 @@
 import {checkListClassNames, commonClassNames, taskClassNames} from "../utils/classNames";
 import {createElement} from "../utils/utils";
 import RemoveBin from '../assets/img/Bin.svg'
+import EditBtn from '../assets/img/EditIcon.svg'
 
 export class TaskUI {
     static getCheckboxInput(completed){
@@ -24,7 +25,7 @@ export class TaskUI {
     static getTaskLabel(completed, text){
         const checkBoxInput = this.getCheckboxInput(completed);
         const taskLabelClasses = [
-            taskClassNames.TASK__LABEL
+            taskClassNames.TASK_LABEL
         ]
 
         if (completed){
@@ -100,17 +101,93 @@ export class TaskUI {
 }
 
 export class CheckListUI {
-    static getCheckListName(name){
-        const checkListNameClassNames = [
-            checkListClassNames.CHECKLIST_NAME
+
+    static getCheckListName(name, set){
+        let element;
+        if (set) {
+            element = createElement('span', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.SET_NAME}`, name);
+        } else {
+            element = createElement('input', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.FORM_INPUT}`, '', {
+                placeholder: 'Дела по дому',
+                value: name,
+            });
+        }
+        return element;
+    }
+
+
+    static getCheckListEditBtnIcon(){
+        const checkListAddBtnIconClassNames = [
+            checkListClassNames.CHECKLIST_ADD_BTN_ICON
         ]
 
         return createElement(
-            'input',
-            checkListNameClassNames.join(' '),
-            name,
+            'img',
+            checkListAddBtnIconClassNames.join(' '),
+            '',
+            {
+                src: EditBtn,
+                alt: "Edit Button Icon"
+            }
         )
     }
+
+    static getCheckListEditBtn(set) {
+        if (set) {
+            const editBtnIcon = this.getCheckListEditBtnIcon();
+            const checkListAddBtnClassNames = [
+                commonClassNames.FORM_BTN,
+                checkListClassNames.CHECKLIST_ADD_NAME_BTN
+            ];
+
+            const checkListAddBtn = createElement(
+                'button',
+                checkListAddBtnClassNames.join(' '),
+                '',
+                {
+                    type: 'button'
+                }
+            );
+            checkListAddBtn.appendChild(editBtnIcon);
+
+            return checkListAddBtn;
+        } else {
+            const checkListAddNameBtnClassNames = [
+                commonClassNames.FORM_BTN,
+                checkListClassNames.CHECKLIST_ADD_NAME_BTN
+            ];
+
+            return createElement(
+                'button',
+                checkListAddNameBtnClassNames.join(' '),
+                '+ добавить имя чеклиста',
+                {
+                    type: 'submit'
+                }
+            );
+        }
+    }
+
+
+    static getAddCheckListNameForm(name, set){
+        const checkListName = this.getCheckListName(name, set);
+        const editBtn = this.getCheckListEditBtn(set);
+        const checkListNameFormClasses = [
+            checkListClassNames.CHECKLIST_FORM,
+            commonClassNames.FORM,
+            checkListClassNames.NAME_FORM
+        ]
+
+        const checkListAddNameForm = createElement(
+            'form',
+            checkListNameFormClasses.join(' ')
+        )
+
+        checkListAddNameForm.append(checkListName, editBtn)
+
+        return checkListAddNameForm;
+    }
+
 
     static getCheckListRemoveButton(){
         const checkListRemoveBtnClassNames = [
@@ -127,8 +204,8 @@ export class CheckListUI {
         )
     }
 
-    static getCheckListHeader(name){
-        const checkListName = this.getCheckListName(name);
+    static getCheckListHeader(name, set){
+        const checkListForm = this.getAddCheckListNameForm(name, set);
         const checkListRemoveBtn = this.getCheckListRemoveButton();
 
         const checkListHeaderClassNames = [
@@ -140,7 +217,7 @@ export class CheckListUI {
             checkListHeaderClassNames.join(' ')
         )
 
-        checkListHeader.append(checkListName, checkListRemoveBtn);
+        checkListHeader.append(checkListForm, checkListRemoveBtn);
 
         return checkListHeader;
     }
@@ -168,7 +245,7 @@ export class CheckListUI {
 
     static getAddTaskInput(){
         const addTaskInputClassNames = [
-            commonClassNames.ADD_TASK_FORM_INPUT
+            commonClassNames.FORM_INPUT
         ]
 
         return createElement(
@@ -184,8 +261,8 @@ export class CheckListUI {
 
     static getAddTaskText(){
         const addTaskTextClassNames = [
-            checkListClassNames.ADD_TASK_TEXT,
-            commonClassNames.ADD_BTN
+            commonClassNames.FORM_BTN,
+            checkListClassNames.CHECKLIST_ADD_TASK_BTN
         ]
 
         return createElement(
@@ -193,7 +270,8 @@ export class CheckListUI {
             addTaskTextClassNames.join(' '),
             '+ добавить пункт',
             {
-                type: 'submit'
+                type: 'submit',
+                disabled: true
             }
         )
     }
@@ -218,7 +296,7 @@ export class CheckListUI {
     }
 
     static getCheckList(checkList){
-        const checkListHeader = this.getCheckListHeader(checkList.name);
+        const checkListHeader = this.getCheckListHeader(checkList.name, checkList.isSetName);
         const checkListTasks = this.getTasksList(checkList.tasks);
         const addTaskForm = this.getAddTaskForm();
 

@@ -13,11 +13,13 @@ export class App {
 
         this._addCheckListBtn.addEventListener('click', this._handleAddCheckListBtnClick.bind(this))
         this._checkListContainerElement.addEventListener('click', this._handleCheckListEventListeners.bind(this))
+
         this._render()
     }
 
     _handleCheckListEventListeners(event){
-        this._handleSubmitAddTaskForm(event)
+        event.preventDefault();
+        this._handleSubmit(event)
         this._handleRemoveCheckList(event)
         this._handleRemoveTask(event)
         this._handleToggleTask(event)
@@ -44,15 +46,14 @@ export class App {
 
     _handleToggleTask(event){
         const target = event.target;
-        if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK__LABEL)){
+        if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK_LABEL)){
             const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
             this._todo.handleToggleTask(taskId, checkListId);
             this._render(checkListId, taskId);
         }
     }
 
-    _handleSubmitAddTaskForm(event) {
-        event.preventDefault();
+    _handleSubmit(event) {
         const target = event.target;
 
         const form = event.target.closest(`.${commonClassNames.FORM}`);
@@ -60,38 +61,54 @@ export class App {
             return;
         }
 
-        const inputElement = form.querySelector(`.${commonClassNames.ADD_TASK_FORM_INPUT}`);
-        if (!inputElement) {
-            return;
-        }
+        const inputElement = form.querySelector(`.${commonClassNames.FORM_INPUT}`);
+        const spanElement = form.querySelector(`.${commonClassNames.SET_NAME}`);
 
-        inputElement.addEventListener('input', (event) => {
-            const buttonElement = inputElement.nextElementSibling;
-            const value = event.target.value;
-            if (value.length >= 5) {
-                event.target.classList.add('valid')
-                buttonElement.classList.add('valid')
-            } else {
-                event.target.classList.remove('valid')
-                buttonElement.classList.remove('valid')
+        if (inputElement) {
+            inputElement.addEventListener('input', (event) => {
+                const buttonElement = inputElement.nextElementSibling;
+                const value = event.target.value;
+                if (value.length >= 5) {
+                    buttonElement.removeAttribute('disabled')
+                    event.target.classList.add('valid')
+                    buttonElement.classList.add('valid')
+                } else {
+                    buttonElement.setAttribute('disabled', 'true')
+                    event.target.classList.remove('valid')
+                    buttonElement.classList.remove('valid')
+                }
+            })
+
+            const inputContent = inputElement.value.trim();
+            if (inputContent.length < 5) {
+                return;
             }
-        })
 
-        const taskContent = inputElement.value.trim();
-        if (taskContent.length < 5) {
-            return;
+            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_TASK_BTN)) {
+                const { checkListId } = this._getChecklistAndTaskIds(target);
+                this._todo.handleAddTask(inputContent, checkListId);
+                inputElement.value = '';
+                this._render(checkListId);
+            }
+            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN)) {
+                const { checkListId } = this._getChecklistAndTaskIds(target);
+                this._todo.setCheckListName(inputContent, checkListId);
+                inputElement.value = '';
+                this._render(checkListId);
+            }
         }
 
-        if (target.classList.contains(commonClassNames.ADD_BTN)) {
-            const { checkListId } = this._getChecklistAndTaskIds(target);
-            this._todo.handleAddTask(taskContent, checkListId);
-            inputElement.value = '';
-            this._render(checkListId);
+        if (spanElement){
+            if (target.classList.contains(checkListClassNames.CHECKLIST_ADD_NAME_BTN) || target.classList.contains(checkListClassNames.CHECKLIST_ADD_BTN_ICON) ) {
+                const { checkListId } = this._getChecklistAndTaskIds(target);
+
+                this._todo.editCheckListName(spanElement.textContent, checkListId);
+                this._render(checkListId);
+            }
         }
     }
 
     _handleRemoveCheckList(event){
-        event.preventDefault();
         const target = event.target;
 
         if (target.classList.contains(checkListClassNames.REMOVE_BTN)){
@@ -102,13 +119,13 @@ export class App {
     }
 
     _handleAddCheckListBtnClick(event){
-        event.preventDefault();
         const target = event.target;
-        if (target.classList.contains(commonClassNames.ADD_BTN)){
+        if (target.classList.contains(checkListClassNames.ADD_CHECKLIST_BTN)){
             this._todo.addCheckList({
                 id: Date.now(),
-                name: 'Check List 1',
+                name: '',
                 tasks: [],
+                isSetName: false,
             })
             this._render();
         }
@@ -118,7 +135,6 @@ export class App {
         if (updatedCheckListId && updatedTaskId) {
             const checkList = this._todo.getCheckListById(updatedCheckListId);
             const task = checkList ? checkList.getTaskById(updatedTaskId) : null;
-
             if (task) {
                 const taskElement = this._checkListContainerElement.querySelector(`[data-task-id="${updatedTaskId}"]`);
                 if (taskElement) {

@@ -1,14 +1,44 @@
 import {CheckList} from "./CheckList"
 export class Todo {
     constructor() {
-        const storedCheckLists = JSON.parse(localStorage.getItem('CheckLists')) || [];
+        const storedCheckLists = JSON.parse(localStorage.getItem('checklists')) || [];
+        if (storedCheckLists.length === 0) {
+            // Если в localStorage нет сохранённых чек-листов, создаём пустой чек-лист
+            storedCheckLists.push(this._createEmptyCheckList());
+        }
         this._checkLists = storedCheckLists.map((checkList) => {
             return new CheckList(checkList)
         })
     }
 
+    _createEmptyCheckList() {
+        // Метод для создания пустого чек-листа
+        return {
+            id: Date.now(), // или другой способ генерации уникального ID
+            name: '',
+            tasks: [],
+            isSetName: false,
+        };
+    }
+
     _saveCheckLists(){
-        localStorage.setItem('CheckLists', JSON.stringify(this._checkLists));
+        localStorage.setItem('checklists', JSON.stringify(this._checkLists));
+    }
+
+
+    setCheckListName(name, checkListId){
+        this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);
+        this.checkList.name = name;
+        this.checkList.isSetName = true;
+        this._saveCheckLists();
+    }
+
+    editCheckListName(name, checkListId){
+        this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);
+        this.checkList.name = name;
+        console.log(this.checkList)
+        this.checkList.isSetName = false;
+        this._saveCheckLists();
     }
 
     addCheckList(checkListData) {
@@ -39,6 +69,7 @@ export class Todo {
         });
         this._saveCheckLists();
     }
+
 
     handleRemoveTask(taskId, checkListId){
         this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);

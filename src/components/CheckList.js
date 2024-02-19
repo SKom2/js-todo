@@ -4,6 +4,7 @@ export class CheckList {
     constructor(checklistData) {
         this.id = checklistData.id;
         this.name = checklistData.name;
+        this.isSetName = checklistData.name ? true : checklistData.isSetName;
         if (checklistData.tasks) {
             this.tasks = checklistData.tasks.map((task) => {
                 return new Task(task);
