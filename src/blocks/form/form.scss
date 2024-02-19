@@ -43,6 +43,8 @@
     height: 100%;
     padding: 0;
 
+
+
     &.valid{
       color: $globalBlue;
     }
@@ -50,9 +52,60 @@
 
 }
 
-.set{
-  box-shadow: none;
-  color: $globalBlack;
-  padding: 0;
-  margin: 0;
+@media screen and (max-width: $Tablet){
+  .form{
+    gap: 7px;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &.set{
+      flex-direction: row;
+      align-items: center;
+    }
+
+    &__input{
+      @include fontSet($fs: $fs-14, $fw: $fw-Regular);
+      padding: 6px;
+      border-radius: 7px;
+    }
+
+    &__button{
+      @include fontSet($fs: $fs-14, $fw: $fw-Regular);
+    }
+  }
+}
+
+.form_tasks{
+  @include displaySettings($justify: flex-start);
+  flex-direction: row;
+  gap: 0;
+}
+
+@media screen and (max-width: $Mobile){
+  .form{
+    gap: 5px;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &.set{
+      flex-direction: row;
+      align-items: center;
+    }
+
+    &__input{
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+      padding: 4px;
+      border-radius: 7px;
+    }
+
+    &__button{
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+    }
+  }
+}
+
+.form_tasks{
+  @include displaySettings($justify: flex-start);
+  flex-direction: row;
+  gap: 0;
 }

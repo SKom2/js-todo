@@ -10,16 +10,16 @@ export const checkListClassNames = {
     CHECKLIST: 'checkLists__checkList',
     CHECKLIST_HEADER: 'checkList__header',
     CHECKLIST_FORM: 'checkList__form',
-    CHECKLIST_ADD_BTN: 'checkList__addBtn',
-    CHECKLIST_ADD_BTN_ICON: 'checklist__addBtn_icon',
+    CHECKLIST_ADD_BTN_ICON: 'checkList__formBtn_icon',
     CHECKLIST_NAME: 'checkList__name',
-    CHECKLIST_ADD_NAME_BTN: 'checkList__addName_btn',
+    CHECKLIST_ADD_NAME_BTN: 'checkList__formBtn',
     CHECKLIST_ADD_TASK_BTN: 'checkList__addTask_btn',
     REMOVE_BTN: 'checkList__removeBtn',
     CHECKLIST_TASKS: 'checkList__tasks tasks',
     ADD_TASK_FORM: 'checkList__form',
     ADD_CHECKLIST_BTN: 'nav__addCheckListBtn',
-    NAME_FORM: 'form_name'
+    NAME_FORM: 'form_name',
+    TASKS_FORM: 'form_tasks'
 };
 
 export const commonClassNames = {

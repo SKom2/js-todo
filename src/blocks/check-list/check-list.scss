@@ -10,12 +10,11 @@
   box-sizing: border-box;
 
   &__form{
-    @include displaySettings($display: inline-block);
-    height: 45px;
+    @include displaySettings($display: flex);
   }
 
   &__header{
-    @include displaySettings($justify: space-between);
+    @include displaySettings($justify: space-between, $align: flex-start);
     margin-bottom: 40px;
   }
 
@@ -25,11 +24,72 @@
     color: $globalRed;
     @include fontSet($fs: $fs-20, $fw: $fw-Regular);
     cursor: pointer;
+    padding: 0;
   }
 
   &__name{
     margin: 0;
     @include fontSet($fs: $fs-20, $fw: $fw-Regular);
+
+    &.set{
+      box-shadow: none;
+      color: $globalBlack;
+      padding: 0;
+      margin: 0;
+    }
+
   }
 }
 
+
+@media screen and (max-width: $Tablet) {
+  .checkList{
+    padding: 16px;
+
+    &__header{
+      margin-bottom: 30px;
+    }
+
+    &__removeBtn{
+      @include fontSet($fs: $fs-14, $fw: $fw-Regular);
+
+    }
+
+    &__name{
+      @include fontSet($fs: $fs-16, $fw: $fw-Regular);
+    }
+
+    &__formBtn{
+
+      &_icon{
+        @include size(16px, 16px);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: $Mobile) {
+  .checkList{
+    padding: 13px;
+
+    &__header{
+      margin-bottom: 20px;
+    }
+
+    &__removeBtn{
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+
+    }
+
+    &__name{
+      @include fontSet($fs: $fs-14, $fw: $fw-Regular);
+    }
+
+    &__formBtn{
+
+      &_icon{
+        @include size(13px, 13px);
+      }
+    }
+  }
+}

@@ -31,3 +31,49 @@
     padding: 0;
   }
 }
+
+@media screen and (max-width: $Tablet){
+  .nav{
+
+    &__tabs{
+      gap: 15px;
+    }
+
+    &__tab{
+      @include fontSet($fs: $fs-12, $fw: $fw-Regular);
+      padding: 0;
+    }
+
+    .active{
+      @include fontSet($fs: $fs-12, $fw: $fw-Medium);
+      border-bottom: 1px solid $globalBlack;
+    }
+
+    &__addCheckListBtn {
+      @include fontSet($fs: $fs-12, $fw: $fw-Regular);
+    }
+  }
+}
+
+@media screen and (max-width: $Mobile){
+  .nav{
+
+    &__tabs{
+      gap: 10px;
+    }
+
+    &__tab{
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+      padding: 0;
+    }
+
+    .active{
+      @include fontSet($fs: $fs-10, $fw: $fw-Medium);
+      border-bottom: 1px solid $globalBlack;
+    }
+
+    &__addCheckListBtn {
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+    }
+  }
+}

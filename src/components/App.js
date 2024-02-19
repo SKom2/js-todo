@@ -132,7 +132,7 @@ export class App {
 
     _handleRemoveTask(taskId, checkListId) {
         this._todo.handleRemoveTask(taskId, checkListId);
-        this._filterTasks(this._page);
+        this._render(checkListId);
     }
 
     _handleAddCheckList() {
@@ -194,7 +194,6 @@ export class App {
         const filteredCheckLists = this._todo.getCheckLists().map(checkList => {
             if (filterType === 'completed') {
                 const completedTasks = checkList.tasks.filter(task => task.completed);
-                console.log({...checkList, tasks: completedTasks})
                 return { ...checkList, tasks: completedTasks };
             } else {
                 return checkList;
@@ -213,10 +212,8 @@ export class App {
 
     _render(updatedCheckListId = null, updatedTaskId = null) {
         if (updatedCheckListId && updatedTaskId) {
-            console.log('tuut')
             const checkList = this._todo.getCheckListById(updatedCheckListId);
             const task = checkList ? checkList.getTaskById(updatedTaskId) : null;
-            console.log(checkList)
             if (!task) return;
             const taskElement = this._checkListContainerElement.querySelector(`[data-task-id="${updatedTaskId}"]`);
             if (!taskElement) return;
@@ -242,7 +239,6 @@ export class App {
         if (isCompletedPage){
             filteredCheckLists = filteredCheckLists.filter(checkList => checkList.tasks.length !== 0)
         }
-        console.log(filteredCheckLists)
         CheckListUI.fillTodo(this._checkListContainerElement, filteredCheckLists, isCompletedPage);
 
     }

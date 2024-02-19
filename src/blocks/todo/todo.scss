@@ -2,9 +2,9 @@
 
 .todo{
   padding: 40px 60px;
-  @include fontSet($fs: $fs-32, $fw: $fw-Bold);
 
   &__title{
+    @include fontSet($fs: $fs-32, $fw: $fw-Bold);
     margin: 0 0 40px;
   }
 
@@ -13,9 +13,33 @@
     padding: 0;
     margin: 20px 0 0;
     list-style-type: none;
+  }
+}
 
-    &:not(:last-child){
+@media screen and (max-width: $Tablet){
+  .todo{
+    padding: 20px 30px;
+
+    &__title{
+      @include fontSet($fs: $fs-26, $fw: $fw-Bold);
       margin-bottom: 20px;
+    }
+    &__checkLists{
+      margin-top: 10px;
+    }
+  }
+}
+
+@media screen and (max-width: $Mobile){
+  .todo{
+    padding: 20px 10px;
+
+    &__title{
+      @include fontSet($fs: $fs-26, $fw: $fw-Bold);
+      margin-bottom: 20px;
+    }
+    &__checkLists{
+      margin-top: 10px;
     }
   }
 }

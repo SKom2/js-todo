@@ -46,3 +46,49 @@
   }
 
 }
+
+@media screen and (max-width: $Tablet){
+  .task{
+    padding-bottom: 10px;
+
+    &__binButton{
+      @include size(17px, 17px);
+
+      &_icon{
+        @include size(12px, 16px)
+      }
+    }
+
+    &__label{
+      @include fontSet($fs: $fs-14, $fw: $fw-Regular);
+      gap: 10px;
+    }
+
+    &__checkbox {
+      @include size(15px, 15px);
+    }
+  }
+}
+
+@media screen and (max-width: $Mobile){
+  .task{
+    padding-bottom: 5px;
+
+    &__binButton{
+      @include size(15px, 15px);
+
+      &_icon{
+        @include size(10px, 13px)
+      }
+    }
+
+    &__label{
+      @include fontSet($fs: $fs-10, $fw: $fw-Regular);
+      gap: 5px;
+    }
+
+    &__checkbox {
+      @include size(12px, 12px);
+    }
+  }
+}

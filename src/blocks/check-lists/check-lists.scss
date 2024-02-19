@@ -6,3 +6,15 @@
   flex-direction: column;
   gap: 30px;
 }
+
+@media screen and (max-width: $Tablet){
+  .checkLists{
+    gap: 17px;
+  }
+}
+
+@media screen and (max-width: $Mobile){
+  .checkLists{
+    gap: 10px;
+  }
+}

@@ -38,7 +38,6 @@ export class TaskUI {
         )
 
         taskLabel.appendChild(checkBoxInput);
-        console.log(text)
 
         const textNode = document.createTextNode(text);
         taskLabel.appendChild(textNode);
@@ -81,7 +80,6 @@ export class TaskUI {
     }
 
    static getTask(task) {
-       console.log(task)
         const taskLabel = this.getTaskLabel(task.completed, task.text);
         const removeBinBtn = this.getRemoveBinBtn();
         const taskClasses = [
@@ -103,7 +101,6 @@ export class TaskUI {
 }
 
 export class CheckListUI {
-
     static getCheckListName(name, set, isCompletedPage){
         let element;
         if (!isCompletedPage){
@@ -184,6 +181,10 @@ export class CheckListUI {
             commonClassNames.FORM,
             checkListClassNames.NAME_FORM
         ]
+
+        if (set){
+            checkListNameFormClasses.push(commonClassNames.SET_NAME);
+        }
 
         const checkListAddNameForm = createElement(
             'form',
@@ -297,7 +298,8 @@ export class CheckListUI {
 
         const addTaskFormClassNames = [
             checkListClassNames.ADD_TASK_FORM,
-            commonClassNames.FORM
+            commonClassNames.FORM,
+            checkListClassNames.TASKS_FORM
         ]
 
         const addTaskForm = createElement(

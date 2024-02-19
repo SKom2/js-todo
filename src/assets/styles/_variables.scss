@@ -37,6 +37,7 @@ $fs-18: 18px;
 $fs-16: 16px;
 $fs-14: 14px;
 $fs-12: 12px;
+$fs-10: 10px;
 
 /*-----------End of Font Sizes------------*/
 
@@ -44,6 +45,6 @@ $fs-12: 12px;
 
 // Main Breakpoints
 
-$Laptop: 1920px;
-$Mobile: 1280px;
-$Mobile: 500px;
+$Laptop: 1280px;
+$Tablet: 768px;
+$Mobile: 425px;
