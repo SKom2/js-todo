@@ -1,6 +1,6 @@
-@import "variables";
-@import "mixins";
-@import "fonts";
+@import "variables.scss";
+@import "mixins.scss";
+@import "fonts.scss";
 
 body {
   max-width: $Laptop;

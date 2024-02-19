@@ -1,4 +1,4 @@
-@import "variables";
+@import "variables.scss";
 
 @mixin font-face($font-family, $font-weight, $font-style, $file-name) {
   @font-face {
