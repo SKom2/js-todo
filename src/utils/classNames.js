@@ -33,3 +33,8 @@ export const commonClassNames = {
     VALID_INPUT: 'valid',
     SET_NAME: 'set'
 }
+
+export const tabClasses = {
+    NAV_TAB: 'nav__tab',
+    ACTIVE_TAB: 'active'
+}

@@ -102,16 +102,21 @@ export class TaskUI {
 
 export class CheckListUI {
 
-    static getCheckListName(name, set){
+    static getCheckListName(name, set, isCompletedPage){
         let element;
-        if (set) {
-            element = createElement('span', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.SET_NAME}`, name);
+        if (!isCompletedPage){
+            if (set) {
+                element = createElement('span', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.SET_NAME}`, name);
+            } else {
+                element = createElement('input', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.FORM_INPUT}`, '', {
+                    placeholder: 'Дела по дому',
+                    value: name,
+                });
+            }
         } else {
-            element = createElement('input', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.FORM_INPUT}`, '', {
-                placeholder: 'Дела по дому',
-                value: name,
-            });
+            element = createElement('span', `${checkListClassNames.CHECKLIST_NAME} ${commonClassNames.SET_NAME}`, name);
         }
+
         return element;
     }
 
@@ -169,8 +174,8 @@ export class CheckListUI {
     }
 
 
-    static getAddCheckListNameForm(name, set){
-        const checkListName = this.getCheckListName(name, set);
+    static getAddCheckListNameForm(name, set, isCompletedPage){
+        const checkListName = this.getCheckListName(name, set, isCompletedPage);
         const editBtn = this.getCheckListEditBtn(set);
         const checkListNameFormClasses = [
             checkListClassNames.CHECKLIST_FORM,
@@ -183,7 +188,11 @@ export class CheckListUI {
             checkListNameFormClasses.join(' ')
         )
 
-        checkListAddNameForm.append(checkListName, editBtn)
+        checkListAddNameForm.append(checkListName)
+
+        if (!isCompletedPage){
+            checkListAddNameForm.append(editBtn)
+        }
 
         return checkListAddNameForm;
     }
@@ -204,8 +213,8 @@ export class CheckListUI {
         )
     }
 
-    static getCheckListHeader(name, set){
-        const checkListForm = this.getAddCheckListNameForm(name, set);
+    static getCheckListHeader(name, set, isCompletedPage){
+        const checkListForm = this.getAddCheckListNameForm(name, set, isCompletedPage);
         const checkListRemoveBtn = this.getCheckListRemoveButton();
 
         const checkListHeaderClassNames = [
@@ -217,12 +226,16 @@ export class CheckListUI {
             checkListHeaderClassNames.join(' ')
         )
 
-        checkListHeader.append(checkListForm, checkListRemoveBtn);
+        checkListHeader.append(checkListForm);
+
+        if (!isCompletedPage){
+            checkListHeader.append(checkListRemoveBtn)
+        }
 
         return checkListHeader;
     }
 
-    static getTasksList(tasks){
+    static getTasksList(tasks, isCompletedPage){
         const taskListNames = [
             checkListClassNames.CHECKLIST_TASKS
         ]
@@ -232,11 +245,19 @@ export class CheckListUI {
             taskListNames.join(' '),
         )
 
-        if (tasks){
-            tasks.forEach(task => {
-                const taskUI = TaskUI.getTask(task)
-                tasksList.appendChild(taskUI);
-            })
+        if (tasks) {
+            if (!isCompletedPage) {
+                tasks.forEach(task => {
+                    const taskUI = TaskUI.getTask(task)
+                    tasksList.appendChild(taskUI);
+                })
+            } else {
+                tasks.forEach(task => {
+                    const completedTask = tasks.find(task => task.completed);
+                    const taskUI = TaskUI.getTask(completedTask)
+                    tasksList.appendChild(taskUI);
+                })
+            }
         }
 
 
@@ -295,11 +316,9 @@ export class CheckListUI {
         return addTaskForm;
     }
 
-    static getCheckList(checkList){
-        const checkListHeader = this.getCheckListHeader(checkList.name, checkList.isSetName);
-        const checkListTasks = this.getTasksList(checkList.tasks);
-        const addTaskForm = this.getAddTaskForm();
-
+    static getCheckList(checkList, isCompletedPage = false) {
+        const checkListHeader = this.getCheckListHeader(checkList.name, checkList.isSetName, isCompletedPage);
+        const checkListTasks = this.getTasksList(checkList.tasks, isCompletedPage);
         const checkListClasses = [
             checkListClassNames.CHECKLIST,
             commonClassNames.CHECKLIST
@@ -314,14 +333,20 @@ export class CheckListUI {
             }
         )
 
-        checkListElement.append(checkListHeader, checkListTasks, addTaskForm);
+        checkListElement.append(checkListHeader, checkListTasks);
+
+        if (!isCompletedPage) {
+            const addTaskForm = this.getAddTaskForm();
+            checkListElement.append(addTaskForm);
+        }
 
         return checkListElement;
     }
 
-    static fillTodo(checkListContainerElement, checkListsArr){
+
+    static fillTodo(checkListContainerElement, checkListsArr, isCompletedPage = false) {
         checkListsArr.forEach((checkList) => {
-            checkListContainerElement.appendChild(this.getCheckList(checkList));
+            checkListContainerElement.appendChild(this.getCheckList(checkList, isCompletedPage));
         })
     }
 }

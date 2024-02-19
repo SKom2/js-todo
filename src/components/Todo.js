@@ -3,7 +3,6 @@ export class Todo {
     constructor() {
         const storedCheckLists = JSON.parse(localStorage.getItem('checklists')) || [];
         if (storedCheckLists.length === 0) {
-            // Если в localStorage нет сохранённых чек-листов, создаём пустой чек-лист
             storedCheckLists.push(this._createEmptyCheckList());
         }
         this._checkLists = storedCheckLists.map((checkList) => {
@@ -12,9 +11,8 @@ export class Todo {
     }
 
     _createEmptyCheckList() {
-        // Метод для создания пустого чек-листа
         return {
-            id: Date.now(), // или другой способ генерации уникального ID
+            id: Date.now(),
             name: '',
             tasks: [],
             isSetName: false,
@@ -42,6 +40,7 @@ export class Todo {
     }
 
     addCheckList(checkListData) {
+        console.log(checkListData)
         this._checkLists.unshift(new CheckList(checkListData))
         this._saveCheckLists();
     }

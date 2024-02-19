@@ -1,20 +1,40 @@
 import {Todo} from "./Todo";
-import {checkListClassNames, commonClassNames, taskClassNames} from "../utils/classNames";
+import {checkListClassNames, commonClassNames, tabClasses, taskClassNames} from "../utils/classNames";
 import {CheckListUI, TaskUI} from "./UI";
 
 export class App {
-    constructor(checkListContainerElement, addCheckListBtn) {
+    constructor(checkListContainerElement, addCheckListBtn, page) {
         this._checkListContainerElement = checkListContainerElement;
         this._addCheckListBtn = addCheckListBtn;
+        this._page = page;
+        this._todo = new Todo();
     }
 
     init(){
-        this._todo = new Todo();
 
         this._addCheckListBtn.addEventListener('click', this._handleAddCheckListBtnClick.bind(this))
         this._checkListContainerElement.addEventListener('click', this._handleCheckListEventListeners.bind(this))
 
-        this._render()
+        const allTasksTab = document.querySelector('#allTasks');
+        const completedTasksTab = document.querySelector('#completedTasks');
+
+        allTasksTab.addEventListener('click', () => {
+            this._filterTasks('all')
+            this._setActiveTab(allTasksTab);
+        });
+        completedTasksTab.addEventListener('click', () => {
+            this._filterTasks('completed')
+            this._setActiveTab(completedTasksTab);
+        });
+
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const tabElement = document.querySelector(`#${savedTab}`);
+            if (tabElement) {
+                this._filterTasks(savedTab === 'allTasks' ? 'all' : 'completed');
+                this._setActiveTab(tabElement);
+            }
+        }
     }
 
     _handleCheckListEventListeners(event){
@@ -24,6 +44,30 @@ export class App {
         this._handleRemoveTask(event)
         this._handleToggleTask(event)
     }
+
+    _setActiveTab(activeTabElement) {
+        const tabs = document.querySelectorAll(`.${tabClasses.NAV_TAB}`);
+        tabs.forEach(tab => {
+            tab.classList.remove(tabClasses.ACTIVE_TAB)
+        });
+        activeTabElement.classList.add(tabClasses.ACTIVE_TAB);
+
+        localStorage.setItem('activeTab', activeTabElement.id);
+    }
+
+    _filterTasks(filterType) {
+        this._page = filterType;
+        const filteredCheckLists = this._todo.getCheckLists().map(checkList => {
+            if (filterType === 'completed') {
+                const completedTasks = checkList.tasks.filter(task => task.completed);
+                return { ...checkList, tasks: completedTasks };
+                } else {
+                    return checkList;
+                }
+        });
+        this._renderFilteredCheckLists(filteredCheckLists);
+    }
+
 
     _getChecklistAndTaskIds(target) {
         const checkListElement = target.closest(`.${checkListClassNames.CHECKLIST}`);
@@ -36,20 +80,26 @@ export class App {
 
     _handleRemoveTask(event){
         const target = event.target;
-
-        if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)){
-            const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
+        if (target.classList.contains(taskClassNames.REMOVE_BIN) || target.classList.contains(taskClassNames.REMOVE_BIN_ICON)) {
+            const {taskId, checkListId} = this._getChecklistAndTaskIds(target);
             this._todo.handleRemoveTask(taskId, checkListId);
-            this._render(checkListId);
+
+            if (this._page === 'completed') {
+                this._filterTasks('completed');
+            } else {
+                this._render(checkListId);
+            }
         }
     }
 
     _handleToggleTask(event){
         const target = event.target;
-        if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK_LABEL)){
-            const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
-            this._todo.handleToggleTask(taskId, checkListId);
-            this._render(checkListId, taskId);
+        if (this._page === 'all'){
+            if (target.classList.contains(taskClassNames.CHECKBOX) || target.classList.contains(taskClassNames.TASK_LABEL)){
+                const { taskId, checkListId } = this._getChecklistAndTaskIds(target);
+                this._todo.handleToggleTask(taskId, checkListId);
+                this._render(checkListId, taskId);
+            }
         }
     }
 
@@ -145,8 +195,9 @@ export class App {
         } else if (updatedCheckListId) {
             const updatedCheckListElement = this._checkListContainerElement.querySelector(`[data-checklist-id="${updatedCheckListId}"]`);
             if (updatedCheckListElement) {
+                const isCompletedPage = this._page === 'completed';
                 const checkListData = this._todo.getCheckListById(updatedCheckListId);
-                const updatedCheckList = CheckListUI.getCheckList(checkListData);
+                const updatedCheckList = CheckListUI.getCheckList(checkListData, isCompletedPage);
                 this._checkListContainerElement.replaceChild(updatedCheckList, updatedCheckListElement);
             }
         } else {
@@ -154,5 +205,15 @@ export class App {
             const checkListsArr = this._todo.getCheckLists();
             CheckListUI.fillTodo(this._checkListContainerElement, checkListsArr);
         }
+    }
+
+    _renderFilteredCheckLists(filteredCheckLists) {
+        this._checkListContainerElement.innerHTML = '';
+        const isCompletedPage = this._page === 'completed';
+        if (isCompletedPage){
+            filteredCheckLists = filteredCheckLists.filter(checkList => checkList.tasks.length !== 0)
+        }
+        CheckListUI.fillTodo(this._checkListContainerElement, filteredCheckLists, isCompletedPage);
+
     }
 }
