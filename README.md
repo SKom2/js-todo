@@ -21,6 +21,6 @@
 To run the project on your local machine:
 
 ```bash
-git clone https://example.com/your-project.git](https://github.com/SKom2/js-todo.git)https://github.com/SKom2/js-todo.git
+git clone https://github.com/SKom2/js-todo.git)https://github.com/SKom2/js-todo.git
 yarn install
 yarn start
