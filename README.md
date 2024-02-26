@@ -20,8 +20,6 @@
 
 To run the project on your local machine:
 
-1. Clone the repository:
-
 ```bash
 git clone https://example.com/your-project.git
 yarn install
