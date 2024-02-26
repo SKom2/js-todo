@@ -18,7 +18,7 @@
 
 ## Installation
 
-To run the project on your local machine:
+To run the project:
 
 ```bash
 git clone https://github.com/SKom2/js-todo.git)https://github.com/SKom2/js-todo.git
