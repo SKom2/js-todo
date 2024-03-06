@@ -9,6 +9,7 @@
 - Deleting tasks
 - Creating checklists for grouping tasks
 - Observing the completed tasks
+- Addaptive layout
 
 ## Technologies
 
