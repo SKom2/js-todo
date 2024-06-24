@@ -313,7 +313,6 @@ export class CheckListUI {
     }
 
     static getCheckList(checkList, isCompletedPage = false) {
-        console.log(checkList)
         const checkListHeader = this.getCheckListHeader(checkList.name, checkList.isSetName, isCompletedPage);
         const checkListTasks = this.getTasksList(checkList.tasks, isCompletedPage);
         const checkListClasses = [

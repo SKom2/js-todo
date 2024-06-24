@@ -8,6 +8,7 @@ export class Todo {
         this._checkLists = storedCheckLists.map((checkList) => {
             return new CheckList(checkList)
         })
+        this._saveCheckLists()
     }
 
     _createEmptyCheckList() {
@@ -34,13 +35,11 @@ export class Todo {
     editCheckListName(name, checkListId){
         this.checkList = this._checkLists.find(checkList => checkList.id === checkListId);
         this.checkList.name = name;
-        console.log(this.checkList)
         this.checkList.isSetName = false;
         this._saveCheckLists();
     }
 
     addCheckList(checkListData) {
-        console.log(checkListData)
         this._checkLists.unshift(new CheckList(checkListData))
         this._saveCheckLists();
     }

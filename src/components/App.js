@@ -8,6 +8,7 @@ export class App {
         this._addCheckListBtn = addCheckListBtn;
         this._page = page;
         this._todo = new Todo();
+        this._render()
     }
 
     init() {
